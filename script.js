@@ -127,6 +127,28 @@ function addNumberToPos(number, pos) {
     }
 }
 
+function combine(row) {
+    row = shiftRow(row);
+    for(let i=0; i<row.length; i++) {
+        if(row[i]==row[i+1]) {
+            row[i] += row[i+1];
+            row[i+1] = 0;
+        }
+    }
+    row = shiftRow(row);
+    return row;
+}
+
 function shiftRow(row) {
-    
+    let tmp = [];
+    for(let i=0; i<row.length; i++) {
+        if(row[i]!=0){
+            tmp.push(row[i]);
+        }
+    }
+    row.fill(0);
+    for(let i=0; i<tmp.length; i++) {
+        row[i] = tmp[i];
+    }
+    return row;
 }
