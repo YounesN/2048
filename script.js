@@ -12,35 +12,28 @@ $( document ).ready(function() {
 $(document).keydown(function(event) {
     switch(event.key) {
         case "ArrowLeft":
-        console.log("left");
-
-        addNumber();
-        drawNumbers();
         break;
 
         case "ArrowUp": // up
         console.log("up");
-
-        addNumber();
-        drawNumbers();
+        shiftUp();
         break;
 
         case "ArrowRight": // right
         console.log("right");
-
-        addNumber();
-        drawNumbers();
         break;
 
         case "ArrowDown": // down
         console.log("down");
-
-        addNumber();
-        drawNumbers();
         break;
 
-        default: return; // exit this handler for other keys
+        default:
+        break; // exit this handler for other keys
     }
+    canvas.clearCanvas();
+    drawGrid();
+    addNumber();
+    drawNumbers();
 });
 
 function setup() {
@@ -124,6 +117,12 @@ function addNumberToPos(number, pos) {
                 }
             }
         }
+    }
+}
+
+function shiftUp() {
+    for(let i=0; i<4; i++) {
+        combine(gridData[i]);
     }
 }
 
