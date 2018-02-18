@@ -3,6 +3,7 @@ var gridData = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
 var gridSize = 400;
 var strokeSize = 16;
 var cellSize = 80;
+var merged = true;
 
 $( document ).ready(function() {
     canvas = $("#grid");
@@ -12,6 +13,8 @@ $( document ).ready(function() {
 $(document).keydown(function(event) {
     switch(event.key) {
         case "ArrowLeft":
+        console.log("left");
+        shiftLeft();
         break;
 
         case "ArrowUp": // up
@@ -21,10 +24,12 @@ $(document).keydown(function(event) {
 
         case "ArrowRight": // right
         console.log("right");
+        shiftRight();
         break;
 
         case "ArrowDown": // down
         console.log("down");
+        shiftDown();
         break;
 
         default:
@@ -38,6 +43,7 @@ $(document).keydown(function(event) {
 
 function setup() {
     drawGrid();
+    addNumber();
     drawNumbers();
 }
 
@@ -80,15 +86,17 @@ function drawNumbers() {
 }
 
 function addNumber() {
-    let left = countZeros();
-    if(left == 0) {
-        console.log("Game over!");
-        return;
+    if(merged) {
+        let left = countZeros();
+        if(left == 0) {
+            console.log("Game over!");
+            return;
+        }
+        let number = (Math.floor(Math.random() * 2)+1)*2;
+        let pos = Math.floor(Math.random() * left);
+        addNumberToPos(number, pos);
+        merged = false;
     }
-    let number = (Math.floor(Math.random() * 2)+1)*2;
-    let pos = Math.floor(Math.random() * left);
-    addNumberToPos(number, pos);
-    console.table(gridData);
 }
 
 function countZeros() {
@@ -122,16 +130,47 @@ function addNumberToPos(number, pos) {
 
 function shiftUp() {
     for(let i=0; i<4; i++) {
-        combine(gridData[i]);
+        gridData[i] = combine(gridData[i]);
     }
+}
+
+function shiftRight() {
+    gridData = rotate90();
+    for(let i=0; i<4; i++) {
+        gridData[i] = combine(gridData[i]);
+    }
+    gridData = rotate90();
+    gridData = rotate90();
+    gridData = rotate90();
+}
+
+function shiftDown() {
+    gridData = rotate90();
+    gridData = rotate90();
+    for(let i=0; i<4; i++) {
+        gridData[i] = combine(gridData[i]);
+    }
+    gridData = rotate90();
+    gridData = rotate90();
+}
+
+function shiftLeft() {
+    gridData = rotate90();
+    gridData = rotate90();
+    gridData = rotate90();
+    for(let i=0; i<4; i++) {
+        gridData[i] = combine(gridData[i]);
+    }
+    gridData = rotate90();
 }
 
 function combine(row) {
     row = shiftRow(row);
     for(let i=0; i<row.length; i++) {
-        if(row[i]==row[i+1]) {
+        if(row[i]==row[i+1] && row[i]!=0) {
             row[i] += row[i+1];
             row[i+1] = 0;
+            merged = true;
         }
     }
     row = shiftRow(row);
@@ -145,9 +184,31 @@ function shiftRow(row) {
             tmp.push(row[i]);
         }
     }
-    row.fill(0);
+    var rowcheck = row.slice();
+    rowcheck.fill(0);
     for(let i=0; i<tmp.length; i++) {
-        row[i] = tmp[i];
+        rowcheck[i] = tmp[i];
     }
+    let c = true;
+    for(let i=0; i<row.length; i++) {
+        if(row[i] != rowcheck[i]) {
+            c = false;
+        }
+    }
+    if(!c) {
+        merged = true;
+    }
+    row = rowcheck;
     return row;
+}
+
+function rotate90() {
+    let ret = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+
+    for (let i = 0; i < 4; ++i) {
+        for (let j = 0; j < 4; ++j) {
+            ret[i][j] = gridData[4-j-1][i];
+        }
+    }
+    return ret;
 }
