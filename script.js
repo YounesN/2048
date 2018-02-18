@@ -44,6 +44,7 @@ $(document).keydown(function(event) {
 function setup() {
     drawGrid();
     addNumber();
+    addNumber();
     drawNumbers();
 }
 
